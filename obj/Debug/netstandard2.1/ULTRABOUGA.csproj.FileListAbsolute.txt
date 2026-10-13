@@ -8,3 +8,14 @@ C:\Users\juliensoum\Documents\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\ne
 C:\Users\juliensoum\Documents\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.csproj.CoreCompileInputs.cache
 C:\Users\juliensoum\Documents\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.dll
 C:\Users\juliensoum\Documents\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.pdb
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.AssemblyInfoInputs.cache
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.AssemblyInfo.cs
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.csproj.CoreCompileInputs.cache
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.sourcelink.json
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.dll
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.pdb
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\bin\Debug\netstandard2.1\ULTRABOUGA.deps.json
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\bin\Debug\netstandard2.1\ULTRABOUGA.dll
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\bin\Debug\netstandard2.1\ULTRABOUGA.pdb
+C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\ULTRABOUGA\obj\Debug\netstandard2.1\ULTRABOUGA.csproj.AssemblyReference.cache
