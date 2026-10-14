@@ -151,9 +151,9 @@ namespace ULTRABOUGA
             var original = HitPointRef(swordMelee);
             HitPointRef(swordMelee) = punchPoint;
             var originalKnockback = (float)KnockbackGetter.Invoke(swordMelee, null);
-            knockbackOverride = originalKnockback * 3f;
+            knockbackOverride = originalKnockback * 5f;
             var originalRadius = RadiusRef(swordMelee);
-            RadiusRef(swordMelee) = originalRadius * 3f;
+            RadiusRef(swordMelee) = originalRadius * 5f;
             try { swordMelee.DealDamage(); }
             finally { HitPointRef(swordMelee) = original; knockbackOverride = null; RadiusRef(swordMelee) = originalRadius; }
         }
