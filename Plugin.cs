@@ -2,19 +2,57 @@ using BepInEx;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using HarmonyLib;
-using System.Net.WebSockets;
 using System.Reflection;
-using UnityEngine.XR.WSA;
+using UnityEngine.Networking;
+using System.Collections;
+using System;
 
 namespace ULTRABOUGA
 {
     [BepInPlugin("fr.bello.ultrabouga", "ULTRABOUGA", "0.1.0")]
     public class Plugin : BaseUnityPlugin
     {
+
+        private IEnumerator LoadCustomSound(string filePath, string desiredName, float volume=1f, bool changePitch=false)
+        {
+            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + filePath, AudioType.WAV))
+            {
+                yield return www.SendWebRequest();
+
+                if (www.result != UnityWebRequest.Result.Success)
+                {
+                    Logger.LogError($"Erreur de chargement audio {desiredName} : {www.error}");
+                    yield break;
+                }
+
+                AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
+                clip.name = desiredName;
+                SFX sfx = new SFX();
+                sfx._clip = clip;
+                sfx.volume = volume;
+                sfx.changePitch = changePitch;
+
+                SoundManager soundManager = FindAnyObjectByType<SoundManager>();
+                if (soundManager == null)
+                {
+                    Logger.LogError("SoundManager introuvable dans la scène !");
+                    yield break;
+                }
+
+                InjectCustomSound(soundManager, sfx);
+            }
+        }
+
+        private void InjectCustomSound(SoundManager soundManager, SFX sfx)
+        {
+            
+        }
+
         void Awake()
         {
             Logger.LogInfo("Mod chargé !");
             new Harmony("fr.bello.ultrakillmod").PatchAll();
+            
         }
 
         static readonly AccessTools.FieldRef<MeleeAttack, Transform> HitPointRef =
@@ -65,26 +103,31 @@ namespace ULTRABOUGA
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.F6)) DumpGameScripts();
-            if (Input.GetKeyDown(KeyCode.F7)) DumpRootObjects();
+            //if (Input.GetKeyDown(KeyCode.F6)) DumpGameScripts();
+            //if (Input.GetKeyDown(KeyCode.F7)) DumpRootObjects();
+
+            if (Input.GetKeyDown(KeyCode.F8) && Physics.Raycast(Camera.main.transform.position,
+                Camera.main.transform.forward, out RaycastHit h, 50f))
+            Logger.LogInfo($"Touché : {h.collider.name}, layer = {LayerMask.LayerToName(h.collider.gameObject.layer)}");
 
             if (Input.GetKeyDown(KeyCode.F) && Time.time > nextPunch)
             {
                 nextPunch = Time.time + 0.3f;
                 nextPunchKnuckleBlaster = Time.time + 0.3f;
+                nextShockwave = 0f;
                 Punch();
             }
             if (Input.GetKeyDown(KeyCode.G) && Time.time > nextPunchKnuckleBlaster)
             {
                 nextPunch = Time.time + 0.3f;
                 nextPunchKnuckleBlaster = Time.time + 0.5f;
-                nextShockwave = Time.time + 0.4f;
+                nextShockwave = Time.time + 0.9f;
                 PunchKnuckleBlaster();
             }
             if (Time.time > nextShockwave && Input.GetKey(KeyCode.G) && nextShockwave > 0f)
             {
                 nextPunch = Time.time + 0.3f;
-                nextPunchKnuckleBlaster = Time.time + 0.5f;
+                nextPunchKnuckleBlaster = Time.time + 1.5f;
                 nextShockwave = 0f;
                 Shockwave();
             }
@@ -213,6 +256,49 @@ namespace ULTRABOUGA
             static void Postfix(PlayerMain __instance)
             {
                 __instance.Inventory.UpdateMoney(500000000);
+            }
+        }
+
+        [HarmonyPatch(typeof(EnemyAI), "UpdateKnockback")]
+        class KnockbackWallPatch
+        {
+            static void Prefix(EnemyAI __instance, out Vector3 __state)
+            {
+                __state = __instance.transform.position;        // position avant le déplacement
+            }
+
+            static void Postfix(EnemyAI __instance, Vector3 __state,
+                                ref Vector3 ___knockbackVel, bool ___knockedBack)
+            {
+                if (!___knockedBack) return;
+
+                LayerMask WhatIsWall = LayerMask.GetMask("WhatIsWall", "WhatIsGround");
+                LayerMask Default = LayerMask.GetMask("Default", "WhatIsGround");
+                LayerMask Throne = LayerMask.GetMask("Throne", "WhatIsGround");
+
+                Transform t = __instance.transform;
+                Vector3 delta = t.position - __state;
+                Vector3 horizontal = new Vector3(delta.x, 0f, delta.z);
+                float dist = horizontal.magnitude;
+                if (dist < 0.0001f) return;
+
+                Vector3 dir = horizontal / dist;
+                Vector3 origin = __state + Vector3.up * 0.9f;
+
+                if (Physics.SphereCast(origin, 0.35f, dir, out RaycastHit hit, dist + 0.05f, WhatIsWall, QueryTriggerInteraction.Ignore)
+                || Physics.SphereCast(origin, 0.35f, dir, out hit, dist + 0.05f, Default, QueryTriggerInteraction.Ignore)
+                || Physics.SphereCast(origin, 0.35f, dir, out hit, dist + 0.05f, Throne, QueryTriggerInteraction.Ignore)
+                )
+                {
+                    float allowed = Mathf.Max(0f, hit.distance - 0.05f);
+                    Vector3 pos = t.position;
+                    pos.x = __state.x + dir.x * allowed;
+                    pos.z = __state.z + dir.z * allowed;
+                    t.position = pos;
+
+                    Vector3 n = new Vector3(hit.normal.x, 0f, hit.normal.z).normalized;
+                    ___knockbackVel = Vector3.ProjectOnPlane(___knockbackVel, n);
+                }
             }
         }
     }
