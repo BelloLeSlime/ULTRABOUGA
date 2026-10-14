@@ -6,7 +6,7 @@
     <AssemblyName>ULTRABOUGA</AssemblyName>
 
     <!-- À ADAPTER -->
-    <GameDir>C:\Users\jmsou\Documents\Programation\Unity\Bouga - The Dark Age\</GameDir>
+    <GameDir>C:\Users\juliensoum\Documents\Unity\Bouga - The Dark Age\</GameDir>
     <DataDir>Bouga  The Dark Age_Data</DataDir>
 
     <ManagedDir>$(GameDir)\$(DataDir)\Managed</ManagedDir>

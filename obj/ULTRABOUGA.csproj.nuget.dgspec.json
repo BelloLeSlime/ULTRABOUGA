@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\jmsou\\Documents\\Programation\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj": {}
+    "C:\\Users\\juliensoum\\Documents\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj": {}
   },
   "projects": {
-    "C:\\Users\\jmsou\\Documents\\Programation\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj": {
+    "C:\\Users\\juliensoum\\Documents\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\jmsou\\Documents\\Programation\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj",
+        "projectUniqueName": "C:\\Users\\juliensoum\\Documents\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj",
         "projectName": "ULTRABOUGA",
-        "projectPath": "C:\\Users\\jmsou\\Documents\\Programation\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj",
-        "packagesPath": "C:\\Users\\jmsou\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\jmsou\\Documents\\Programation\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\obj\\",
+        "projectPath": "C:\\Users\\juliensoum\\Documents\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj",
+        "packagesPath": "C:\\Users\\juliensoum\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\juliensoum\\Documents\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\jmsou\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\juliensoum\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netstandard2.1"
@@ -24,7 +24,6 @@
         },
         "frameworks": {
           "netstandard2.1": {
-            "framework": "netstandard2.1",
             "targetAlias": "netstandard2.1",
             "projectReferences": {}
           }
@@ -33,17 +32,10 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.400"
+        }
       },
       "frameworks": {
         "netstandard2.1": {
-          "framework": "netstandard2.1",
           "targetAlias": "netstandard2.1",
           "imports": [
             "net461",
@@ -56,18 +48,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "NETStandard.Library.Ref",
-              "version": "[2.1.0, 2.1.0]"
-            }
-          ],
           "frameworkReferences": {
             "NETStandard.Library": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Users\\juliensoum\\Documents\\Apps\\dotnet\\sdk\\6.0.428\\RuntimeIdentifierGraph.json"
         }
       }
     }
