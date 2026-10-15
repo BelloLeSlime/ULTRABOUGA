@@ -5,58 +5,60 @@ using HarmonyLib;
 using System.Reflection;
 using UnityEngine.Networking;
 using System.Collections;
-using System;
+using System.Collections.Generic;
+using System.IO;
+
 
 namespace ULTRABOUGA
 {
     [BepInPlugin("fr.bello.ultrabouga", "ULTRABOUGA", "0.1.0")]
     public class Plugin : BaseUnityPlugin
     {
-
-        private IEnumerator LoadCustomSound(string filePath, string desiredName, float volume=1f, bool changePitch=false)
-        {
-            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + filePath, AudioType.WAV))
-            {
-                yield return www.SendWebRequest();
-
-                if (www.result != UnityWebRequest.Result.Success)
-                {
-                    Logger.LogError($"Erreur de chargement audio {desiredName} : {www.error}");
-                    yield break;
-                }
-
-                AudioClip clip = DownloadHandlerAudioClip.GetContent(www);
-                clip.name = desiredName;
-                SFX sfx = new SFX();
-                sfx._clip = clip;
-                sfx.volume = volume;
-                sfx.changePitch = changePitch;
-
-                SoundManager soundManager = FindAnyObjectByType<SoundManager>();
-                if (soundManager == null)
-                {
-                    Logger.LogError("SoundManager introuvable dans la scène !");
-                    yield break;
-                }
-
-                InjectCustomSound(soundManager, sfx);
-            }
-        }
-
-        private void InjectCustomSound(SoundManager soundManager, SFX sfx)
-        {
-            
-        }
+        AudioClip punchClip;
+        AudioClip punchHitClip;
+        AudioClip knucklePunchClip;
+        AudioClip knucklePunchHitClip;
+        AudioClip knuckleShockwaveClip;
+        AudioSource sfxSource;
 
         void Awake()
         {
             Logger.LogInfo("Mod chargé !");
             new Harmony("fr.bello.ultrakillmod").PatchAll();
-            
+
+            sfxSource = gameObject.AddComponent<AudioSource>();
+            sfxSource.spatialBlend = 0f;
+            StartCoroutine(LoadClip("assets/sounds/PunchSwoosh.ogg", AudioType.OGGVORBIS, c => punchClip = c));
+            StartCoroutine(LoadClip("assets/sounds/Punch_heavy.ogg", AudioType.OGGVORBIS, c => punchHitClip = c));
+            StartCoroutine(LoadClip("assets/sounds/KnuckleblasterPunch.ogg", AudioType.OGGVORBIS, c => knucklePunchClip = c));
+            StartCoroutine(LoadClip("assets/sounds/Punch_havey_1.wav", AudioType.WAV, c => knucklePunchHitClip = c));
+            StartCoroutine(LoadClip("assets/sounds/Explosion_Wave.ogg", AudioType.OGGVORBIS, c => knuckleShockwaveClip = c));
+        }
+
+        IEnumerator LoadClip(string fileName, AudioType type, System.Action<AudioClip> done)
+        {
+            string path = Path.Combine(Path.GetDirectoryName(Info.Location), fileName);
+            string url = new System.Uri(path).AbsoluteUri;
+
+            using (var req = UnityWebRequestMultimedia.GetAudioClip(url, type))
+            {
+                yield return req.SendWebRequest();
+                if (req.result != UnityWebRequest.Result.Success)
+                {
+                    Logger.LogError($"Impossible de charger {fileName} : {req.error}");
+                    yield break;
+                }
+                var clip = DownloadHandlerAudioClip.GetContent(req);
+                clip.name = Path.GetFileNameWithoutExtension(fileName);
+                done(clip);
+            }
         }
 
         static readonly AccessTools.FieldRef<MeleeAttack, Transform> HitPointRef =
             AccessTools.FieldRefAccess<MeleeAttack, Transform>("hitPoint");
+        
+        static readonly AccessTools.FieldRef<MeleeAttack, LayerMask> layerMaskEnnemies =
+            AccessTools.FieldRefAccess<MeleeAttack, LayerMask>("targetMask");
 
         static readonly AccessTools.FieldRef<MeleeAttack, float> RadiusRef =
             AccessTools.FieldRefAccess<MeleeAttack, float>("radius");
@@ -73,32 +75,16 @@ namespace ULTRABOUGA
         float nextPunchKnuckleBlaster;
         float nextShockwave;
 
-        static float? damageOverride;
-        static float? knockbackOverride;
-
-        [HarmonyPatch(typeof(MeleeAttack), "Damage", MethodType.Getter)]
-        class DamageGetterPatch
-        {
-            static void Postfix(ref float __result)
-            {
-                if (damageOverride.HasValue) __result = damageOverride.Value;
-            }
-        }
-
-        [HarmonyPatch(typeof(MeleeAttack), "Knockback", MethodType.Getter)]
-        class KnockbackGetterPatch
-        {
-            static void Postfix(ref float __result)
-            {
-                if (knockbackOverride.HasValue) __result = knockbackOverride.Value;
-            }
-        }
-
         static string GetPath(Transform t)
         {
             string p = t.name;
             while (t.parent != null) { t = t.parent; p = t.name + "/" + p; }
             return p;
+        }
+
+        public void PlaySound(AudioClip clip, float volume=1f)
+        {
+            if (clip != null) sfxSource.PlayOneShot(clip, volume);
         }
 
         void Update()
@@ -133,6 +119,29 @@ namespace ULTRABOUGA
             }
         }
 
+        int DealMeleeDamage(float Damage, Transform hitPoint, float radius, float Knockback)
+        {
+            if (hitPoint == null || swordMelee == null)
+            {
+                return (0);
+            }
+            Collider[] array = Physics.OverlapSphere(hitPoint.position, radius, layerMaskEnnemies(swordMelee));
+            HashSet<IDamageable> hashSet = new HashSet<IDamageable>();
+            int targets = 0;
+            foreach (Collider collider in array)
+            {
+                targets += 1;
+                IDamageable componentInChildren = collider.GetComponentInChildren<IDamageable>();
+                if (componentInChildren != null && !hashSet.Contains(componentInChildren))
+                {
+                    hashSet.Add(componentInChildren);
+                    Vector3 normalized = (collider.transform.position - hitPoint.position).normalized;
+                    componentInChildren.TakeDamage(Damage, normalized, Knockback);
+                }
+            }
+            return (targets);
+        }
+
         void Punch()
         {
             if (swordMelee == null)
@@ -146,11 +155,12 @@ namespace ULTRABOUGA
             var cam = Camera.main.transform;
             if (punchPoint == null) punchPoint = new GameObject("PunchPoint").transform;
             punchPoint.position = cam.position + cam.forward * 1.5f;
-
-            var original = HitPointRef(swordMelee);
-            HitPointRef(swordMelee) = punchPoint;
-            try { swordMelee.DealDamage(); }
-            finally { HitPointRef(swordMelee) = original;}
+            float damage = (float)DamageGetter.Invoke(swordMelee, null);
+            float radius = RadiusRef(swordMelee);
+            float knockback = (float)KnockbackGetter.Invoke(swordMelee, null);
+            int targets = this.DealMeleeDamage(damage , punchPoint, radius, knockback);
+            if (targets == 0) this.PlaySound(punchClip, 1f);
+            else this.PlaySound(punchHitClip, 1f);
         }
 
         void PunchKnuckleBlaster()
@@ -166,15 +176,12 @@ namespace ULTRABOUGA
             var cam = Camera.main.transform;
             if (punchPoint == null) punchPoint = new GameObject("PunchPoint").transform;
             punchPoint.position = cam.position + cam.forward * 1.5f;
-
-            var original = HitPointRef(swordMelee);
-            HitPointRef(swordMelee) = punchPoint;
-            var originalDamage = (float)DamageGetter.Invoke(swordMelee, null);
-            damageOverride = originalDamage * 3f;
-            var originalKnockback = (float)KnockbackGetter.Invoke(swordMelee, null);
-            knockbackOverride = originalKnockback * 3f;
-            try { swordMelee.DealDamage(); }
-            finally { HitPointRef(swordMelee) = original; damageOverride = null; knockbackOverride = null; }
+            float damage = (float)DamageGetter.Invoke(swordMelee, null) * 3f;
+            float radius = RadiusRef(swordMelee);
+            float knockback = (float)KnockbackGetter.Invoke(swordMelee, null) * 3f;
+            int targets = this.DealMeleeDamage(damage , punchPoint, radius, knockback);
+            if (targets == 0) this.PlaySound(knucklePunchClip, 1f);
+            else this.PlaySound(knucklePunchHitClip, 1f);
         }
 
         void Shockwave()
@@ -190,15 +197,11 @@ namespace ULTRABOUGA
             var cam = Camera.main.transform;
             if (punchPoint == null) punchPoint = new GameObject("PunchPoint").transform;
             punchPoint.position = cam.position;
-
-            var original = HitPointRef(swordMelee);
-            HitPointRef(swordMelee) = punchPoint;
-            var originalKnockback = (float)KnockbackGetter.Invoke(swordMelee, null);
-            knockbackOverride = originalKnockback * 5f;
-            var originalRadius = RadiusRef(swordMelee);
-            RadiusRef(swordMelee) = originalRadius * 5f;
-            try { swordMelee.DealDamage(); }
-            finally { HitPointRef(swordMelee) = original; knockbackOverride = null; RadiusRef(swordMelee) = originalRadius; }
+            float damage = (float)DamageGetter.Invoke(swordMelee, null);
+            float radius = RadiusRef(swordMelee) * 5f;
+            float knockback = (float)KnockbackGetter.Invoke(swordMelee, null) * 5f;
+            this.DealMeleeDamage(damage , punchPoint, radius, knockback);    
+            this.PlaySound(knuckleShockwaveClip, 1.5f);
         }
     
 

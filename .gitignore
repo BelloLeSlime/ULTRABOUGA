@@ -1,2 +1,4 @@
 ULTRABOUGA.csproj
 bin/
+src/
+.vscode/
