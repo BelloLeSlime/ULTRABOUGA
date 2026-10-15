@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ULTRABOUGA")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+14249cb45f74a3ce8453b587f51fc04b6e5de851")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a9c4846a0c0eeec5c010cfbcd7dff028b4e5f4e2")]
 [assembly: System.Reflection.AssemblyProductAttribute("ULTRABOUGA")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ULTRABOUGA")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
