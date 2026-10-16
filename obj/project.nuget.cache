@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hWjpdDMQ/Io=",
+  "dgSpecHash": "GwzAuDwW+8DckH4rhZ3JWKvyuUuQXX7MHX+GJeDc9lssCvOs2dynH/AGAzLX7gsBi/geLSVKQmiwKJmQvcoADQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\jmsou\\Documents\\Programation\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\jmsou\\.nuget\\packages\\netstandard.library.ref\\2.1.0\\netstandard.library.ref.2.1.0.nupkg.sha512"
-  ],
+  "projectFilePath": "C:\\Users\\juliensoum\\Documents\\Unity\\Bouga - The Dark Age\\ULTRABOUGA\\ULTRABOUGA.csproj",
+  "expectedPackageFiles": [],
   "logs": []
 }

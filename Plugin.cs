@@ -31,7 +31,7 @@ namespace ULTRABOUGA
             StartCoroutine(LoadClip("assets/sounds/PunchSwoosh.ogg", AudioType.OGGVORBIS, c => punchClip = c));
             StartCoroutine(LoadClip("assets/sounds/Punch_heavy.ogg", AudioType.OGGVORBIS, c => punchHitClip = c));
             StartCoroutine(LoadClip("assets/sounds/KnuckleblasterPunch.ogg", AudioType.OGGVORBIS, c => knucklePunchClip = c));
-            StartCoroutine(LoadClip("assets/sounds/Punch_havey_1.wav", AudioType.WAV, c => knucklePunchHitClip = c));
+            StartCoroutine(LoadClip("assets/sounds/Punch_heavy_1.wav", AudioType.WAV, c => knucklePunchHitClip = c));
             StartCoroutine(LoadClip("assets/sounds/Explosion_Wave.ogg", AudioType.OGGVORBIS, c => knuckleShockwaveClip = c));
         }
 
